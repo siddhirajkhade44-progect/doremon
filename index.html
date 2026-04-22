@@ -1,1 +1,137 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html>
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Doraemon Catch Game</title>
+  <style>
+  body {
+    margin: 0;
+    overflow: hidden;
+    background: skyblue;
+    text-align: center;
+  }
+
+  #game {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+  }
+
+  #doraemon {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    width: 80px;
+    transform: translateX(-50%);
+    transition: left 0.2s linear;
+    animation: bounce 0.5s infinite alternate;
+  }
+
+  /* Jump/Bounce Animation */
+  @@keyframes bounce {
+  from { transform: translate(-50%, 0); }
+  to { transform: translate(-50%, -15px); }
+}
+
+  .cake {
+    position: absolute;
+    width: 50px;
+  }
+
+  #score {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    font-size: 20px;
+    color: black;
+  }
+</style>
+</head>
+
+<body>
+<div id="game">
+  <div id="score">Score: 0</div>
+  <img id="doraemon" src="https://cdn-icons-png.flaticon.com/512/4712/4712027.png">
+</div>
+
+<script>
+let game = document.getElementById("game");
+let doraemon = document.getElementById("doraemon");
+let scoreText = document.getElementById("score");
+
+let score = 0;
+
+// Move Doraemon
+document.addEventListener("touchmove", (e) => {
+  let x = e.touches[0].clientX;
+  let currentX = doraemon.offsetLeft;
+
+  // Flip direction
+  if (x > currentX) {
+    doraemon.style.transform = "translateX(-50%) scaleX(1)";
+  } else {
+    doraemon.style.transform = "translateX(-50%) scaleX(-1)";
+  }
+
+  doraemon.style.left = x + "px";
+});
+
+// Create falling cakes
+function createCake() {
+  let cake = document.createElement("img");
+  cake.src = "https://cdn-icons-png.flaticon.com/512/1046/1046784.png";
+  cake.classList.add("cake");
+
+  cake.style.left = Math.random() * window.innerWidth + "px";
+  cake.style.top = "0px";
+
+  game.appendChild(cake);
+
+  let fall = setInterval(() => {
+    let top = parseInt(cake.style.top);
+    cake.style.top = top + 5 + "px";
+
+    // Collision detect
+    let dRect = doraemon.getBoundingClientRect();
+    let cRect = cake.getBoundingClientRect();
+
+    if (
+      cRect.bottom > dRect.top &&
+      cRect.left < dRect.right &&
+      cRect.right > dRect.left
+    ) {
+      score++;
+      scoreText.innerText = "Score: " + score;
+      cake.remove();
+      clearInterval(fall);
+    }
+
+    // Miss = Game Over
+    if (top > window.innerHeight) {
+      alert("Game Over! Score: " + score);
+      location.reload();
+      clearInterval(fall);
+    }
+
+  }, 30);
+}
+
+// Spawn cakes
+setInterval(createCake, 1500);
+</script>
+
+</body>
+</html>
